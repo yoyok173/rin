@@ -104,7 +104,7 @@ def handle_text_message(event):
 def handle_join(event):
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text='Thank you for inviting me to this ' + event.source.type + 'To remove this bot please run command.'))
+        TextSendMessage(text='Thank you for inviting me to this ' + event.source.type))
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
