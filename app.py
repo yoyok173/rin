@@ -39,18 +39,23 @@ from linebot.models import (
 
 app = Flask(__name__)
 
-# get channel_secret and channel_access_token from your environment variable
+# get variables from your environment variable
 channel_secret = os.getenv('LINE_CHANNEL_SECRET', None)
 channel_access_token = os.getenv('LINE_CHANNEL_ACCESS_TOKEN', None)
+nasa_apod_apikey = os.gentev('NASA_KEY', None)
 if channel_secret is None:
     print('Specify LINE_CHANNEL_SECRET as environment variable.')
     sys.exit(1)
 if channel_access_token is None:
     print('Specify LINE_CHANNEL_ACCESS_TOKEN as environment variable.')
     sys.exit(1)
+if nasa_apod_apikey is None:
+    print('Specify NASA_KEY as environment variable.')
+    sys.exit(1)
 
 line_bot_api = LineBotApi(channel_access_token)
 handler = WebhookHandler(channel_secret)
+nasa_url = 'https://api.nasa.gov/planetary/apod?api_key=(nasa_apod_apikey)'
 
 static_tmp_path = os.path.join(os.path.dirname(__file__), 'static', 'tmp')
 
@@ -65,6 +70,14 @@ def make_static_tmp_dir():
         else:
             raise
 
+def nasa_apod():
+    respon = urllib.urlopen(nasa_url)
+    data = json.loads(respon.read())
+    nasa_title = data['title']
+    return content1
+    nasa_url = data['url']
+    return content2
+    nasa_hdurl = data['hdurl']
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -87,7 +100,7 @@ def callback():
 def handle_text_message(event):
     text = event.message.text
 
-    if text == '@bye':
+    if text == '/bye':
         if isinstance(event.source, SourceGroup):
             line_bot_api.reply_message(
                 event.reply_token, TextMessage(text='Leaving group'))
@@ -99,6 +112,13 @@ def handle_text_message(event):
         else:
             line_bot_api.reply_message(
                 event.reply_token, TextMessage(text="Bot can't leave from 1:1 chat"))
+    if text == '/APOD':
+        content1 = nasa_apod()
+        line_bot_api.reply_message(
+            event.reply_token, ImageSendMessage(
+                original_content_url=nasa_hdurl,
+                preview_image_url=nasa_url
+                )
 
 @handler.add(JoinEvent)
 def handle_join(event):
