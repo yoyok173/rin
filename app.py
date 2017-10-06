@@ -12,12 +12,8 @@
 
 from __future__ import unicode_literals
 
-import errno
-import os
-import sys
-import tempfile
-import urllib
-import json
+import errno, os, sys, tempfile, urllib, json
+import urllib.request
 
 from flask import Flask, request, abort
 
@@ -57,7 +53,7 @@ if nasa_apod_apikey is None:
 
 line_bot_api = LineBotApi(channel_access_token)
 handler = WebhookHandler(channel_secret)
-nasa_url = 'https://api.nasa.gov/planetary/apod?api_key=(nasa_apod_apikey)'
+jokesurl = 'http://api.icndb.com/jokes/random'
 
 static_tmp_path = os.path.join(os.path.dirname(__file__), 'static', 'tmp')
 
@@ -72,14 +68,11 @@ def make_static_tmp_dir():
         else:
             raise
 
-def nasa_apod():
-    respon = urllib.request.urlopen(nasa_url)
-    data = json.loads(respon.read())
-    nasa_phototitle = data['title']
-    return content1
-    nasa_photourl = data['url']
-    return content2
-    nasa_photohdurl = data['hdurl']
+def jokes():
+    req = urllib.request.urlopen(jokesurl)
+    jokes = json.loads(req.read())
+    content = jokes['value']['joke']
+    return content
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -114,12 +107,14 @@ def handle_text_message(event):
         else:
             line_bot_api.reply_message(
                 event.reply_token, TextMessage(text="Bot can't leave from 1:1 chat"))
-    if text == '/APOD':
-        nasa_hdurl, nasa_url = nasa_apod()
+    if text == '/joke':
+        content = jokes()
         line_bot_api.reply_message(
-            event.reply_token, ImageSendMessage(
-                original_content_url=nasa_photohdurl,
-                preview_image_url=nasa_photourl))
+            event.reply_token, TextMessage(text=content))
+    if text == 'ping':
+        line_bot_api.reply_message(
+            event.reply_token, TextMessage(text='pong!'))
+    
             
 @handler.add(JoinEvent)
 def handle_join(event):
