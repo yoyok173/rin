@@ -113,13 +113,12 @@ def handle_text_message(event):
             line_bot_api.reply_message(
                 event.reply_token, TextMessage(text="Bot can't leave from 1:1 chat"))
     if text == '/APOD':
-        content1 = nasa_apod()
+        nasa_hdurl, nasa_url = nasa_apod()
         line_bot_api.reply_message(
             event.reply_token, ImageSendMessage(
                 original_content_url=nasa_hdurl,
-                preview_image_url=nasa_url
-                )
-
+                preview_image_url=nasa_url))
+            
 @handler.add(JoinEvent)
 def handle_join(event):
     line_bot_api.reply_message(
