@@ -73,13 +73,13 @@ def make_static_tmp_dir():
             raise
 
 def nasa_apod():
-    respon = urllib.urlopen(nasa_url)
+    respon = urllib.request.urlopen(nasa_url)
     data = json.loads(respon.read())
-    nasa_title = data['title']
+    nasa_phototitle = data['title']
     return content1
-    nasa_url = data['url']
+    nasa_photourl = data['url']
     return content2
-    nasa_hdurl = data['hdurl']
+    nasa_photohdurl = data['hdurl']
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -118,8 +118,8 @@ def handle_text_message(event):
         nasa_hdurl, nasa_url = nasa_apod()
         line_bot_api.reply_message(
             event.reply_token, ImageSendMessage(
-                original_content_url=nasa_hdurl,
-                preview_image_url=nasa_url))
+                original_content_url=nasa_photohdurl,
+                preview_image_url=nasa_photourl))
             
 @handler.add(JoinEvent)
 def handle_join(event):
