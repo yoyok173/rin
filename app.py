@@ -42,7 +42,7 @@ app = Flask(__name__)
 # get variables from your environment variable
 channel_secret = os.getenv('LINE_CHANNEL_SECRET', None)
 channel_access_token = os.getenv('LINE_CHANNEL_ACCESS_TOKEN', None)
-nasa_apod_apikey = os.gentev('NASA_KEY', None)
+nasa_apod_apikey = os.getenv('NASA_KEY', None)
 if channel_secret is None:
     print('Specify LINE_CHANNEL_SECRET as environment variable.')
     sys.exit(1)
