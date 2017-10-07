@@ -14,6 +14,7 @@ from __future__ import unicode_literals
 
 import errno, os, sys, tempfile, urllib, json
 import urllib.request
+import render_template
 
 from flask import Flask, request, abort
 
