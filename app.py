@@ -70,6 +70,14 @@ def jokes():
     content = jokes['value']['joke']
     return content
 
+@app.route("/wakemydyno.txt")
+def wakemydyno():
+    return render_template('wakemydyno.txt')
+
+@app.route("/")
+def index():
+    return "Hello i'am Akari Hirose :D"
+
 @app.route("/callback", methods=['POST'])
 def callback():
     # get X-Line-Signature header value
