@@ -15,7 +15,7 @@ from __future__ import unicode_literals
 import errno, os, sys, tempfile, urllib, json
 import urllib.request
 
-from flask import Flask, request, abort, render_template
+from flask import Flask, request, abort
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -69,10 +69,6 @@ def jokes():
     jokes = json.loads(req.read())
     content = jokes['value']['joke']
     return content
-
-@app.route("/")
-def index():
-    return render_template('index.html')
 
 @app.route("/callback", methods=['POST'])
 def callback():
