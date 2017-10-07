@@ -70,10 +70,9 @@ def jokes():
     content = jokes['value']['joke']
     return content
 
-@app.route("/wakemydyno.txt")
-def wakemydyno():
-    return render_template('wakemydyno.txt')
-
+@app.route('/<path:filename>')
+def send_file(filename):
+    return send_from_directory('/', filename)
 @app.route("/")
 def index():
     return "Hello i'am Akari Hirose :D"
