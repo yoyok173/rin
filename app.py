@@ -70,12 +70,9 @@ def jokes():
     content = jokes['value']['joke']
     return content
 
-@app.route('/<path:filename>')
-def send_file(filename):
-    return send_from_directory('/', filename)
 @app.route("/")
 def index():
-    return "Hello i'am Akari Hirose :D"
+    return render_template('index.html')
 
 @app.route("/callback", methods=['POST'])
 def callback():
