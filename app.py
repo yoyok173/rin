@@ -1,4 +1,5 @@
-#  Licensed under the Apache License, Version 2.0 (the "License"); you may
+# -*- coding: cp1252 -*-
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
 #  not use this file except in compliance with the License. You may obtain
 #  a copy of the License at
 #
@@ -14,6 +15,7 @@ from __future__ import unicode_literals
 
 import errno, os, sys, tempfile, urllib, json
 import urllib.request
+import requests
 
 from flask import Flask, request, abort
 
@@ -40,16 +42,19 @@ app = Flask(__name__)
 # get variables from your environment variable
 channel_secret = os.getenv('LINE_CHANNEL_SECRET', None)
 channel_access_token = os.getenv('LINE_CHANNEL_ACCESS_TOKEN', None)
+owmapi = os.getenv('OWEATHER_TOKEN', None)
 if channel_secret is None:
     print('Specify LINE_CHANNEL_SECRET as environment variable.')
     sys.exit(1)
 if channel_access_token is None:
     print('Specify LINE_CHANNEL_ACCESS_TOKEN as environment variable.')
     sys.exit(1)
+if owmapi is None:
+    print('Specify OWEATHER_TOKEN as environment variable.')
+    sys.exit(1)
 
 line_bot_api = LineBotApi(channel_access_token)
 handler = WebhookHandler(channel_secret)
-jokesurl = 'http://api.icndb.com/jokes/random'
 
 static_tmp_path = os.path.join(os.path.dirname(__file__), 'static', 'tmp')
 
@@ -65,11 +70,12 @@ def make_static_tmp_dir():
             raise
 
 def jokes():
+    jokesurl = 'http://api.icndb.com/jokes/random'
     req = urllib.request.urlopen(jokesurl)
     jokes = json.loads(req.read())
     content = jokes['value']['joke']
     return content
-
+    
 @app.route("/callback", methods=['POST'])
 def callback():
     # get X-Line-Signature header value
@@ -110,8 +116,28 @@ def handle_text_message(event):
     if text == 'ping':
         line_bot_api.reply_message(
             event.reply_token, TextMessage(text='pong!'))
-    
-            
+    if '/cuaca' in text:
+        try :
+            location = text.split(' ')[1] #Get the weather location's information from chat string. Example: /cuaca jakarta, it's only use "jakarta" as primary string.
+            weatherurl = 'http://api.openweathermap.org/data/2.5/weather?q=' + location + '&APPID=' + owmapi
+            req = requests.get(weatherurl)
+            cuacaraw = json.loads(req.text)
+            cuacajson = json.dumps(cuacaraw)
+            cuaca = json.loads(cuacajson)
+            a = cuaca['weather'][0]['description']
+            d = cuaca['name']
+            e = cuaca['sys']['country']
+            f = cuaca['main']['temp']
+            g = f - 273
+            h = "%.2f" % g + '°C'
+            i = cuaca['main']['humidity']
+            j = str(i)
+            content = 'Cuaca di ' + d + ', ' + e + '\n' + a + ', ' + h + '\nKelembaban ' + j + '%'
+        except IndexError:
+            content = 'Silahkan gunakan /cuaca <nama_kota> untuk mengecek cuaca saat ini'
+        line_bot_api.reply_message(
+            event.reply_token, TextMessage(text=content))
+
 @handler.add(JoinEvent)
 def handle_join(event):
     line_bot_api.reply_message(
