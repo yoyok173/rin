@@ -109,16 +109,21 @@ def handle_text_message(event):
         else:
             line_bot_api.reply_message(
                 event.reply_token, TextMessage(text="Bot can't leave from 1:1 chat"))
-    if text == '/joke':
+    if '/joke' and '/j' in text:
         content = jokes()
         line_bot_api.reply_message(
             event.reply_token, TextMessage(text=content))
-    if text == 'ping':
+    
+    if '/ping' and '/p' in text:
         line_bot_api.reply_message(
             event.reply_token, TextMessage(text='pong!'))
-    if '/weather' in text:
+    if '/help' and '/h' in text:
+        content = 'Available commands:\n/joke - Get Chuck Norris jokes.\n/weather - Gets the current weather in a given location.\n/ping - Send ping command.'
+        line_bot_api.reply_message(
+            event.reply_token, TextMessage(text=content))
+    if '/weather' and '/w' in text:
         try :
-            location = text.split(' ')[1] #Get the weather location's information from chat string. Example: /cuaca jakarta, it's only use "jakarta" as primary string.
+            location = text.split(' ')[1]
             weatherurl = 'http://api.openweathermap.org/data/2.5/weather?q=' + location + '&APPID=' + owmapi
             req = requests.get(weatherurl)
             cuacaraw = json.loads(req.text)
@@ -129,7 +134,7 @@ def handle_text_message(event):
             e = cuaca['sys']['country']
             f = cuaca['main']['temp']
             g = f - 273
-            h = "%.2f" % g + 'ºC'
+            h = "%.2f" % g + 'ÂºC'
             i = cuaca['main']['humidity']
             j = str(i)
             content = 'Weather in ' + d + ', ' + e + '\n' + a + ', ' + h + '\nHumidity ' + j + '%'

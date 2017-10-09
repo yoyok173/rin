@@ -1,0 +1,4 @@
+Available commands:
+/joke - Get Chuck Norris's jokes.
+/weather - Gets the current weather in a given location.
+/ping - Send ping command.
