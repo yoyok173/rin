@@ -129,7 +129,7 @@ def handle_text_message(event):
             e = cuaca['sys']['country']
             f = cuaca['main']['temp']
             g = f - 273
-            h = "%.2f" % g + 'ï¿½C'
+            h = "%.2f" % g + 'ºC'
             i = cuaca['main']['humidity']
             j = str(i)
             content = 'Weather in ' + d + ', ' + e + '\n' + a + ', ' + h + '\nHumidity ' + j + '%'
