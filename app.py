@@ -75,7 +75,7 @@ def jokes():
     jokes = json.loads(req.read())
     content = jokes['value']['joke']
     return content
-    
+
 @app.route("/callback", methods=['POST'])
 def callback():
     # get X-Line-Signature header value
@@ -116,7 +116,7 @@ def handle_text_message(event):
     if text == 'ping':
         line_bot_api.reply_message(
             event.reply_token, TextMessage(text='pong!'))
-    if '/cuaca' in text:
+    if '/weather' in text:
         try :
             location = text.split(' ')[1] #Get the weather location's information from chat string. Example: /cuaca jakarta, it's only use "jakarta" as primary string.
             weatherurl = 'http://api.openweathermap.org/data/2.5/weather?q=' + location + '&APPID=' + owmapi
@@ -129,12 +129,12 @@ def handle_text_message(event):
             e = cuaca['sys']['country']
             f = cuaca['main']['temp']
             g = f - 273
-            h = "%.2f" % g + '°C'
+            h = "%.2f" % g + 'ï¿½C'
             i = cuaca['main']['humidity']
             j = str(i)
-            content = 'Cuaca di ' + d + ', ' + e + '\n' + a + ', ' + h + '\nKelembaban ' + j + '%'
+            content = 'Weather in ' + d + ', ' + e + '\n' + a + ', ' + h + '\nHumidity ' + j + '%'
         except IndexError:
-            content = 'Silahkan gunakan /cuaca <nama_kota> untuk mengecek cuaca saat ini'
+            content = 'Usage: /weather <location>'
         line_bot_api.reply_message(
             event.reply_token, TextMessage(text=content))
 
